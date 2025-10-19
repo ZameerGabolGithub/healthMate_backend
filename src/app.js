@@ -39,6 +39,15 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Handle preflight OPTIONS for all routes
+app.options('*', cors(corsOptions));
+
+// Simple request logger for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Static files (for uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
