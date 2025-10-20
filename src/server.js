@@ -15,10 +15,10 @@ connectDB();
 // Start server
 const server = app.listen(PORT, () => {
   console.log('='.repeat(50));
-  console.log(`🚀 HealthMate Server Running`);
-  console.log(`📡 Mode: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`📝 API Docs: http://localhost:${PORT}/api`);
+  console.log(` HealthMate Server Running`);
+  console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
+  console.log(` URL: http://localhost:${PORT}`);
+  console.log(` API Docs: http://localhost:${PORT}/api`);
   console.log('='.repeat(50));
 });
 
