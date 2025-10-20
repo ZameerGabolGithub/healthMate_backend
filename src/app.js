@@ -35,7 +35,9 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5000',
   'http://localhost:3000',
-];
+  // Railway will set this automatically, but you can add your custom domain here
+  process.env.FRONTEND_URL, // Add your Railway frontend URL to .env
+].filter(Boolean); // Remove undefined values
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -67,6 +69,8 @@ app.get('/', (req, res) => {
     success: true,
     message: 'HealthMate API is running 🚀',
     version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
     endpoints: {
       auth: '/api/auth',
       files: '/api/files',
@@ -75,6 +79,33 @@ app.get('/', (req, res) => {
       timeline: '/api/timeline',
     },
   });
+});
+
+// Health check endpoint for monitoring
+app.get('/health', async (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV,
+  };
+
+  try {
+    // Check database connection
+    const mongoose = (await import('mongoose')).default;
+    if (mongoose.connection.readyState === 1) {
+      health.database = 'connected';
+    } else {
+      health.database = 'disconnected';
+      health.status = 'degraded';
+    }
+  } catch (error) {
+    health.database = 'error';
+    health.status = 'unhealthy';
+  }
+
+  const statusCode = health.status === 'ok' ? 200 : 503;
+  res.status(statusCode).json(health);
 });
 
 // API routes
